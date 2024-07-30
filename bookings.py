@@ -7,6 +7,10 @@ from flask_restful import Resource
 class HomeResource(Resource):
     def get(self):
         return {'message': 'Hello, World!'}
+from flask import request, jsonify
+from model import db, Booking
+from datetime import datetime
+from flask_restful import Resource
 
 class BookingResource(Resource):
     def get(self, id=None):
@@ -14,14 +18,13 @@ class BookingResource(Resource):
             booking = Booking.query.get(id)
             if not booking:
                 return {'message': 'Booking not found'}, 404
-            return jsonify(booking.serialize())
+            return booking.serialize()
         bookings = Booking.query.all()
-        return jsonify([booking.serialize() for booking in bookings])
-    
+        return [booking.serialize() for booking in bookings]
+
     def post(self):
         data = request.get_json()
         
-        # Convert date strings to datetime objects
         check_in = datetime.strptime(data['check_in'], '%Y-%m-%d %H:%M:%S')
         check_out = datetime.strptime(data['check_out'], '%Y-%m-%d %H:%M:%S')
         
@@ -35,7 +38,7 @@ class BookingResource(Resource):
         )
         db.session.add(new_booking)
         db.session.commit()
-        return jsonify(new_booking.serialize()), 201
+        return new_booking.serialize(), 201
 
     def put(self, id):
         data = request.get_json()
@@ -54,7 +57,7 @@ class BookingResource(Resource):
         booking.total_price = data['total_price']
         booking.status = data['status']
         db.session.commit()
-        return jsonify(booking.serialize())
+        return booking.serialize()
         
     def delete(self, id):
         booking = Booking.query.get(id)
@@ -63,4 +66,6 @@ class BookingResource(Resource):
 
         db.session.delete(booking)
         db.session.commit()
-        return '', 204
+        return {'message': 'Booking deleted successfully'}, 200
+
+
