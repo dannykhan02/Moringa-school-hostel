@@ -8,6 +8,7 @@ from model import db
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['JWT_SECRET_KEY'] = 'your_jwt_secret_key' 
 
 api = Api(app)
 db.init_app(app)
