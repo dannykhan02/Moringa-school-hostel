@@ -7,10 +7,7 @@ from flask_restful import Resource
 class HomeResource(Resource):
     def get(self):
         return {'message': 'Hello, World!'}
-from flask import request, jsonify
-from model import db, Booking
-from datetime import datetime
-from flask_restful import Resource
+
 
 class BookingResource(Resource):
     def get(self, id=None):
@@ -46,7 +43,6 @@ class BookingResource(Resource):
         if not booking:
             return {'message': 'Booking not found'}, 404
 
-        # Convert date strings to datetime objects
         check_in = datetime.strptime(data['check_in'], '%Y-%m-%d %H:%M:%S')
         check_out = datetime.strptime(data['check_out'], '%Y-%m-%d %H:%M:%S')
         
