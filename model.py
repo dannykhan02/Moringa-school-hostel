@@ -8,7 +8,6 @@ class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    gender = db.Column(db.String(10), nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     bookings = db.relationship('Booking', backref='student', lazy=True)
     reviews = db.relationship('Review', backref='student', lazy=True)
@@ -59,6 +58,17 @@ class Booking(db.Model):
     check_out = db.Column(db.DateTime, nullable=False)
     total_price = db.Column(db.Float, nullable=False)
     status = db.Column(db.String(50), nullable=False)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'student_id': self.student_id,
+            'accommodation_id': self.accommodation_id,
+            'check_in': self.check_in.strftime('%d/%m/%Y'),
+            'check_out': self.check_out.strftime('%d/%m/%Y'),
+            'total_price': self.total_price,
+            'status': self.status
+        }
 
 class Review(db.Model):
     id = db.Column(db.Integer, primary_key=True)
