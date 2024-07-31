@@ -6,7 +6,9 @@ db = SQLAlchemy()
 
 class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
+    first_name=db.Column(db.String(80), nullable=False)
+    last_name = db.Column(db.String(80), nullable=False)
+    gender = db.Column(db.String(10), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     bookings = db.relationship('Booking', backref='student', lazy=True)
@@ -22,13 +24,15 @@ class Student(db.Model):
     def as_dict(self):
         return {
             'id': self.id,
-            'username': self.username,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'gender': self.gender,
             'email': self.email
         }
 
 class Host(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), unique=True, nullable=False)
+    name = db.Column(db.String(100), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     accommodations = db.relationship('Accommodation', backref='host', lazy=True)
