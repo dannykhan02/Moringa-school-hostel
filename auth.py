@@ -1,8 +1,8 @@
-from flask import request, jsonify
+from flask import request
 from flask_restful import Resource
 from model import db, Student, Host
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import create_access_token, JWTManager
+from flask_jwt_extended import create_access_token
+from datetime import timedelta
 
 class RegisterStudentResource(Resource):
     def post(self):
@@ -61,7 +61,7 @@ class LoginStudentResource(Resource):
         if not student or not student.check_password(password):
             return {'message': 'Invalid email or password'}, 401
 
-        access_token = create_access_token(identity={'type': 'student', 'id': student.id})
+        access_token = create_access_token(identity={'type': 'student', 'id': student.id}, expires_delta=timedelta(days=30))
         return {'access_token': access_token, 'message': 'Login successful'}, 200
 
 
@@ -76,6 +76,5 @@ class LoginHostResource(Resource):
         if not host or not host.check_password(password):
             return {'message': 'Invalid email or password'}, 401
 
-        access_token = create_access_token(identity={'type': 'host', 'id': host.id})
+        access_token = create_access_token(identity={'type': 'host', 'id': host.id}, expires_delta=timedelta(days=30))
         return {'access_token': access_token, 'message': 'Login successful'}, 200
-
