@@ -20,19 +20,26 @@ class AmenityResource(Resource):
             return make_response(jsonify({'message': 'Access forbidden: Insufficient role'}), 403)
 
         data = request.get_json()
-        name = data.get('name')
-        description = data.get('description')
+        if not isinstance(data, list):
+            return make_response(jsonify({'message': 'Expected a list of amenities'}), 400)
 
-        if not name:
-            return make_response(jsonify({'message': 'Missing required fields'}), 400)
+        new_amenities = []
+        for amenity_data in data:
+            name = amenity_data.get('name')
+            description = amenity_data.get('description')
 
-        new_amenity = Amenity(
-            name=name,
-            description=description
-        )
-        db.session.add(new_amenity)
+            if not name:
+                return make_response(jsonify({'message': 'Missing required fields in one or more amenities'}), 400)
+
+            new_amenity = Amenity(
+                name=name,
+                description=description
+            )
+            db.session.add(new_amenity)
+            new_amenities.append(new_amenity)
+
         db.session.commit()
-        return make_response(jsonify(new_amenity.as_dict()), 201)
+        return make_response(jsonify([amenity.as_dict() for amenity in new_amenities]), 201)
 
     @jwt_required()
     def put(self, id):

@@ -20,25 +20,36 @@ class AccommodationResource(Resource):
             return make_response(jsonify({'message': 'Access forbidden: Insufficient role'}), 403)
 
         data = request.get_json()
-        title = data.get('title')
-        description = data.get('description')
-        location = data.get('location')
-        price_per_night = data.get('price_per_night')
-        host_id = current_user['id']
+        if not isinstance(data, list):
+            return make_response(jsonify({'message': 'Expected a list of accommodations'}), 400)
 
-        if not all([title, description, location, price_per_night, host_id]):
-            return make_response(jsonify({'message': 'Missing required fields'}), 400)
+        new_accommodations = []
+        for accommodation_data in data:
+            title = accommodation_data.get('title')
+            description = accommodation_data.get('description')
+            location = accommodation_data.get('location')
+            price_per_night = accommodation_data.get('price_per_night')
+            number_of_rooms = accommodation_data.get('number_of_rooms')
+            number_of_students = accommodation_data.get('number_of_students')
+            host_id = current_user['id']
 
-        new_accommodation = Accommodation(
-            title=title,
-            description=description,
-            location=location,
-            price_per_night=price_per_night,
-            host_id=host_id
-        )
-        db.session.add(new_accommodation)
+            if not all([title, description, location, price_per_night, number_of_rooms, number_of_students, host_id]):
+                return make_response(jsonify({'message': 'Missing required fields in one or more accommodations'}), 400)
+
+            new_accommodation = Accommodation(
+                title=title,
+                description=description,
+                location=location,
+                price_per_night=price_per_night,
+                number_of_rooms=number_of_rooms,
+                number_of_students=number_of_students,
+                host_id=host_id
+            )
+            db.session.add(new_accommodation)
+            new_accommodations.append(new_accommodation)
+
         db.session.commit()
-        return make_response(jsonify(new_accommodation.as_dict()), 201)
+        return make_response(jsonify([accommodation.as_dict() for accommodation in new_accommodations]), 201)
 
     @jwt_required()
     def put(self, id):
@@ -58,6 +69,8 @@ class AccommodationResource(Resource):
         accommodation.description = data.get('description', accommodation.description)
         accommodation.location = data.get('location', accommodation.location)
         accommodation.price_per_night = data.get('price_per_night', accommodation.price_per_night)
+        accommodation.number_of_rooms = data.get('number_of_rooms', accommodation.number_of_rooms)
+        accommodation.number_of_students = data.get('number_of_students', accommodation.number_of_students)
         db.session.commit()
         return make_response(jsonify(accommodation.as_dict()), 200)
 

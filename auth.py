@@ -50,21 +50,31 @@ class RegisterHostResource(Resource):
         return {'message': 'Host registered successfully'}, 201
 
 
-class LoginResource(Resource):
+class LoginStudentResource(Resource):
     def post(self):
         data = request.get_json()
         email = data.get('email')
         password = data.get('password')
 
-        user = Student.query.filter_by(email=email).first()
-        user_type = 'student'
+        student = Student.query.filter_by(email=email).first()
 
-        if not user or not user.check_password(password):
-            user = Host.query.filter_by(email=email).first()
-            user_type = 'host'
+        if not student or not student.check_password(password):
+            return {'message': 'Invalid email or password'}, 401
 
-            if not user or not user.check_password(password):
-                return {'message': 'Invalid email or password'}, 401
+        access_token = create_access_token(identity={'type': 'student', 'id': student.id}, expires_delta=timedelta(days=30))
+        return {'access_token': access_token, 'message': 'Login successful'}, 200
 
-        access_token = create_access_token(identity={'type': user_type, 'id': user.id}, expires_delta=timedelta(days=30))
+
+class LoginHostResource(Resource):
+    def post(self):
+        data = request.get_json()
+        email = data.get('email')
+        password = data.get('password')
+
+        host = Host.query.filter_by(email=email).first()
+
+        if not host or not host.check_password(password):
+            return {'message': 'Invalid email or password'}, 401
+
+        access_token = create_access_token(identity={'type': 'host', 'id': host.id}, expires_delta=timedelta(days=30))
         return {'access_token': access_token, 'message': 'Login successful'}, 200
