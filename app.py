@@ -3,6 +3,7 @@ from flask_restful import Api
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
 from model import db
+from flask_cors import CORS
 from accommodation import AccommodationResource, AccommodationAmenityResource
 from Reviews import ReviewListResource, ReviewResource, AccommodationReviewResource
 from bookings import BookingResource
@@ -18,6 +19,7 @@ app.config['JWT_SECRET_KEY'] = 'you never walk alone'
 db.init_app(app)
 migrate = Migrate(app, db)
 api = Api(app)
+CORS(app)
 
 jwt = JWTManager(app)
 
