@@ -17,8 +17,8 @@ class PaymentResource(Resource):
             currency = data['currency']
 
             charge = stripe.Charge.create(
-                amount=amount,  # Amount in smallest currency unit, e.g., cents
-                currency=currency,  # Currency
+                amount=amount,  
+                currency=currency,  
                 description='Example charge',
                 source=token
             )
@@ -31,7 +31,7 @@ class PaymentResource(Resource):
 class VerifyPaymentResource(Resource):
     def get(self, charge_id):
         try:
-            # Retrieve the charge details from Stripe
+            
             charge = stripe.Charge.retrieve(charge_id)
             return jsonify(charge)
         except stripe.error.StripeError as e:
