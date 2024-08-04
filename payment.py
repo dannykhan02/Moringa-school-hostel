@@ -1,5 +1,6 @@
 from flask_restful import Resource
 from flask import request, jsonify
+from flask_jwt_extended import jwt_required, get_jwt_identity
 import stripe
 import os
 from dotenv import load_dotenv
@@ -9,6 +10,7 @@ load_dotenv()
 stripe.api_key = os.getenv('STRIPE_TEST_SECRET_KEY')
 
 class PaymentResource(Resource):
+    @jwt_required()
     def post(self):
         try:
             data = request.json
@@ -29,6 +31,7 @@ class PaymentResource(Resource):
             return jsonify({'success': False, 'error': str(e)})
 
 class VerifyPaymentResource(Resource):
+    @jwt_required()
     def get(self, charge_id):
         try:
             
