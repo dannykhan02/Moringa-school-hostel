@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 438a25fc2a4e
+Revision ID: a69179647063
 Revises: 
-Create Date: 2024-07-30 11:43:28.691405
+Create Date: 2024-08-01 11:47:06.678840
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '438a25fc2a4e'
+revision = 'a69179647063'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -22,26 +22,25 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=80), nullable=False),
     sa.Column('description', sa.Text(), nullable=True),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('name')
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('host',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(length=80), nullable=False),
+    sa.Column('name', sa.String(length=100), nullable=False),
     sa.Column('email', sa.String(length=120), nullable=False),
     sa.Column('password_hash', sa.String(length=128), nullable=False),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('email'),
-    sa.UniqueConstraint('name')
+    sa.UniqueConstraint('email')
     )
     op.create_table('student',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('username', sa.String(length=80), nullable=False),
+    sa.Column('first_name', sa.String(length=80), nullable=False),
+    sa.Column('last_name', sa.String(length=80), nullable=False),
+    sa.Column('gender', sa.String(length=10), nullable=False),
     sa.Column('email', sa.String(length=120), nullable=False),
     sa.Column('password_hash', sa.String(length=128), nullable=False),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('email'),
-    sa.UniqueConstraint('username')
+    sa.UniqueConstraint('email')
     )
     op.create_table('accommodation',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -49,8 +48,10 @@ def upgrade():
     sa.Column('description', sa.Text(), nullable=False),
     sa.Column('location', sa.String(length=200), nullable=False),
     sa.Column('price_per_night', sa.Float(), nullable=False),
+    sa.Column('number_of_rooms', sa.Integer(), nullable=False),
+    sa.Column('number_of_students', sa.Integer(), nullable=False),
     sa.Column('host_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['host_id'], ['host.id'], ),
+    sa.ForeignKeyConstraint(['host_id'], ['host.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('student_amenity',
@@ -58,15 +59,15 @@ def upgrade():
     sa.Column('student_id', sa.Integer(), nullable=False),
     sa.Column('amenity_id', sa.Integer(), nullable=False),
     sa.Column('preference_level', sa.String(length=50), nullable=True),
-    sa.ForeignKeyConstraint(['amenity_id'], ['amenity.id'], ),
-    sa.ForeignKeyConstraint(['student_id'], ['student.id'], ),
+    sa.ForeignKeyConstraint(['amenity_id'], ['amenity.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['student_id'], ['student.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('accommodation_amenity',
     sa.Column('accommodation_id', sa.Integer(), nullable=False),
     sa.Column('amenity_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['accommodation_id'], ['accommodation.id'], ),
-    sa.ForeignKeyConstraint(['amenity_id'], ['amenity.id'], ),
+    sa.ForeignKeyConstraint(['accommodation_id'], ['accommodation.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['amenity_id'], ['amenity.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('accommodation_id', 'amenity_id')
     )
     op.create_table('booking',
@@ -77,8 +78,8 @@ def upgrade():
     sa.Column('check_out', sa.DateTime(), nullable=False),
     sa.Column('total_price', sa.Float(), nullable=False),
     sa.Column('status', sa.String(length=50), nullable=False),
-    sa.ForeignKeyConstraint(['accommodation_id'], ['accommodation.id'], ),
-    sa.ForeignKeyConstraint(['student_id'], ['student.id'], ),
+    sa.ForeignKeyConstraint(['accommodation_id'], ['accommodation.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['student_id'], ['student.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('review',
@@ -87,8 +88,8 @@ def upgrade():
     sa.Column('accommodation_id', sa.Integer(), nullable=False),
     sa.Column('rating', sa.Integer(), nullable=False),
     sa.Column('comment', sa.Text(), nullable=True),
-    sa.ForeignKeyConstraint(['accommodation_id'], ['accommodation.id'], ),
-    sa.ForeignKeyConstraint(['student_id'], ['student.id'], ),
+    sa.ForeignKeyConstraint(['accommodation_id'], ['accommodation.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['student_id'], ['student.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     # ### end Alembic commands ###
