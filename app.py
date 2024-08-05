@@ -9,13 +9,12 @@ from Reviews import ReviewListResource, ReviewResource, AccommodationReviewResou
 from bookings import BookingResource
 from amenity import AmenityResource
 from auth import RegisterStudentResource, RegisterHostResource, LoginStudentResource, LoginHostResource
-from payment import PaymentResource, VerifyPaymentResource
 
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JWT_SECRET_KEY'] = 'you never walk alone'
+app.config['JWT_SECRET_KEY'] = 'kejani'
 
 db.init_app(app)
 migrate = Migrate(app, db)
@@ -38,12 +37,6 @@ api.add_resource(AccommodationReviewResource, '/accommodations/<int:accommodatio
 api.add_resource(AccommodationResource, '/accommodations', '/accommodations/<int:id>')
 api.add_resource(AccommodationAmenityResource, '/accommodations/<int:accommodation_id>/amenities')
 api.add_resource(AmenityResource, '/amenities', '/amenities/<int:id>')
-
-# Adding the Payment Resource
-api.add_resource(PaymentResource, '/payments')
-
-# Adding the Verify Payment Resource
-api.add_resource(VerifyPaymentResource, '/verify_payment/<string:charge_id>')
 
 if __name__ == '__main__':
     app.run(debug=True)

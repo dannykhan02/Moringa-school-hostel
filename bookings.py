@@ -3,9 +3,6 @@ from model import db, Booking, Accommodation
 from datetime import datetime, timedelta
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restful import Resource
-import stripe
-
-stripe.api_key = 'sk_test_51Pj4YdRxZMXmtnTtXJT976s0PTAAVix1cdQVbtVYcrs83QHit4OecUkmsfnhF31WNa1HS1mCyPha6dTjXyEB7V0n007BNfKiVP'
 
 class BookingResource(Resource):
     @jwt_required()
@@ -40,32 +37,10 @@ class BookingResource(Resource):
             return make_response(jsonify({'message': 'Accommodation not found'}), 404)
 
         check_in = datetime.strptime(data['check_in'], '%Y-%m-%d %H:%M:%S')
-        check_out = check_in + timedelta(days=30)  # Book for a month
-
+        check_out = check_in + timedelta(days=30)  
         total_price = 30 * accommodation.price_per_night
 
-        if data['amount'] != total_price:
-            return make_response(jsonify({'message': 'Payment amount does not match the total price'}), 400)
-
-        payment_method_id = data.get('paymentMethodId')
-        currency = data.get('currency', 'kes')
-        payment_amount = int(total_price * 100)
-
-        try:
-            intent = stripe.PaymentIntent.create(
-                amount=payment_amount,
-                currency=currency,
-                payment_method=payment_method_id,
-                confirmation_method='manual',
-                confirm=True,
-                return_url='https://yourdomain.com/return',
-            )
-            
-            if intent.status != 'succeeded':
-                return make_response(jsonify({'message': 'Payment failed', 'status': intent.status}), 400)
-
-        except stripe.error.StripeError as e:
-            return make_response(jsonify({'message': 'Payment error', 'error': str(e)}), 400)
+        
         
         new_booking = Booking(
             student_id=current_user['id'],
@@ -98,7 +73,7 @@ class BookingResource(Resource):
             return make_response(jsonify({'message': 'Accommodation not found'}), 404)
 
         check_in = datetime.strptime(data['check_in'], '%Y-%m-%d %H:%M:%S')
-        check_out = check_in + timedelta(days=30)  # Update booking for a month
+        check_out = check_in + timedelta(days=30)  
 
         total_price = 30 * accommodation.price_per_night
 
