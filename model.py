@@ -1,8 +1,11 @@
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
-
+from flask_bcrypt import Bcrypt
 
 db = SQLAlchemy()
+bcrypt = Bcrypt()
+
+
 
 class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -19,6 +22,13 @@ class Student(db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'email': self.email
+        }
+
 class Host(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
@@ -32,6 +42,13 @@ class Host(db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'email': self.email
+        }
+
 class Accommodation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
@@ -43,12 +60,29 @@ class Accommodation(db.Model):
     reviews = db.relationship('Review', backref='accommodation', lazy=True)
     amenities = db.relationship('AccommodationAmenity', back_populates='accommodation')
 
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'description': self.description,
+            'location': self.location,
+            'price_per_night': self.price_per_night,
+            'host_id': self.host_id
+        }
+
 class Amenity(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
     description = db.Column(db.Text, nullable=True)
     student_amenities = db.relationship('StudentAmenity', back_populates='amenity')
     accommodations = db.relationship('AccommodationAmenity', back_populates='amenity')
+
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'description': self.description
+        }
 
 class Booking(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -77,6 +111,15 @@ class Review(db.Model):
     rating = db.Column(db.Integer, nullable=False)
     comment = db.Column(db.Text, nullable=True)
 
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'student_id': self.student_id,
+            'accommodation_id': self.accommodation_id,
+            'rating': self.rating,
+            'comment': self.comment
+        }
+
 class StudentAmenity(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     student_id = db.Column(db.Integer, db.ForeignKey('student.id'), nullable=False)
@@ -85,8 +128,22 @@ class StudentAmenity(db.Model):
     student = db.relationship('Student', back_populates='student_amenities')
     amenity = db.relationship('Amenity', back_populates='student_amenities')
 
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'student_id': self.student_id,
+            'amenity_id': self.amenity_id,
+            'preference_level': self.preference_level
+        }
+
 class AccommodationAmenity(db.Model):
     accommodation_id = db.Column(db.Integer, db.ForeignKey('accommodation.id'), primary_key=True)
     amenity_id = db.Column(db.Integer, db.ForeignKey('amenity.id'), primary_key=True)
     accommodation = db.relationship('Accommodation', back_populates='amenities')
     amenity = db.relationship('Amenity', back_populates='accommodations')
+
+    def as_dict(self):
+        return {
+            'accommodation_id': self.accommodation_id,
+            'amenity_id': self.amenity_id
+        }
