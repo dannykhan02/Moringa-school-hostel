@@ -8,21 +8,33 @@ class BookingResource(Resource):
     @jwt_required()
     def get(self, id=None):
         current_user = get_jwt_identity()
-        if current_user['type'] != 'student':
-            return make_response(jsonify({'message': 'Access denied: Only students can view bookings'}), 403)
 
-        if id:
-            booking = Booking.query.get(id)
-            if not booking:
-                return make_response(jsonify({'message': 'Booking not found'}), 404)
+        # If user is a student
+        if current_user['type'] == 'student':
+            if id:
+                booking = Booking.query.get(id)
+                if not booking:
+                    return make_response(jsonify({'message': 'Booking not found'}), 404)
 
-            if booking.student_id != current_user['id']:
-                return make_response(jsonify({'message': 'Access denied: This booking is not yours'}), 403)
+                if booking.student_id != current_user['id']:
+                    return make_response(jsonify({'message': 'Access denied: This booking is not yours'}), 403)
 
-            return make_response(jsonify(booking.serialize()), 200)
+                return make_response(jsonify(booking.serialize()), 200)
+
+            bookings = Booking.query.filter_by(student_id=current_user['id']).all()
+            return make_response(jsonify([booking.serialize() for booking in bookings]), 200)
         
-        bookings = Booking.query.filter_by(student_id=current_user['id']).all()
-        return make_response(jsonify([booking.serialize() for booking in bookings]), 200)
+        # If user is a host
+        elif current_user['type'] == 'host':
+            accommodations = Accommodation.query.filter_by(host_id=current_user['id']).all()
+            if not accommodations:
+                return make_response(jsonify({'message': 'No accommodations found for this host'}), 404)
+            
+            accommodation_ids = [accommodation.id for accommodation in accommodations]
+            bookings = Booking.query.filter(Booking.accommodation_id.in_(accommodation_ids)).all()
+            return make_response(jsonify([booking.serialize() for booking in bookings]), 200)
+        
+        return make_response(jsonify({'message': 'Access denied: Invalid user type'}), 403)
 
     @jwt_required()
     def post(self):
@@ -40,8 +52,6 @@ class BookingResource(Resource):
         check_out = check_in + timedelta(days=30)  
         total_price = 30 * accommodation.price_per_night
 
-        
-        
         new_booking = Booking(
             student_id=current_user['id'],
             accommodation_id=data['accommodation_id'],
