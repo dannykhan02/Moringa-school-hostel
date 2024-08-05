@@ -28,7 +28,6 @@ class RegisterStudentResource(Resource):
 
         return {'message': 'Student registered successfully'}, 201
 
-
 class RegisterHostResource(Resource):
     def post(self):
         data = request.get_json()
@@ -49,7 +48,6 @@ class RegisterHostResource(Resource):
 
         return {'message': 'Host registered successfully'}, 201
 
-
 class LoginStudentResource(Resource):
     def post(self):
         data = request.get_json()
@@ -64,7 +62,6 @@ class LoginStudentResource(Resource):
         access_token = create_access_token(identity={'type': 'student', 'id': student.id}, expires_delta=timedelta(days=30))
         return {'access_token': access_token, 'message': 'Login successful'}, 200
 
-
 class LoginHostResource(Resource):
     def post(self):
         data = request.get_json()
@@ -78,3 +75,22 @@ class LoginHostResource(Resource):
 
         access_token = create_access_token(identity={'type': 'host', 'id': host.id}, expires_delta=timedelta(days=30))
         return {'access_token': access_token, 'message': 'Login successful'}, 200
+
+class ResetPasswordResource(Resource):
+    def post(self):
+        data = request.get_json()
+        email = data.get('email')
+        new_password = data.get('new_password')
+
+        if not email or not new_password:
+            return {'message': 'Email and new password are required'}, 400
+
+        user = Student.query.filter_by(email=email).first() or Host.query.filter_by(email=email).first()
+
+        if not user:
+            return {'message': 'User not found'}, 404
+
+        user.set_password(new_password)
+        db.session.commit()
+
+        return {'message': 'Password reset successfully'}, 200
