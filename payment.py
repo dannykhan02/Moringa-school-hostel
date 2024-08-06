@@ -8,7 +8,6 @@ import base64
 app = Flask(__name__)
 api = Api(app)
 
-
 MPESA_CONSUMER_KEY = 'AvnO2hFOvgnTjC3DhjjsPvSZg43wx2pKR7mppwnEpXcofgXq'
 MPESA_CONSUMER_SECRET = '79BL7sZjAfsK6ffS7NzgOpnglJhS11Vh2FAaxleIZRkaKXMfQ2l9qbk0R39CuOrD'
 MPESA_BUSINESS_SHORT_CODE = '174379'
@@ -34,9 +33,10 @@ class MpesaPaymentResource(Resource):
     def post(self):
         try:
             data = request.json
-            amount = 45000 
-           
+            amount = data.get('amount', 45000)  # default to 45000 if not provided
             phone_number = data.get('phone_number')
+            first_name = data.get('first_name', '')
+            last_name = data.get('last_name', '')
 
             if not amount or not phone_number:
                 return jsonify({'success': False, 'error': 'Amount and phone number are required'})
@@ -49,10 +49,10 @@ class MpesaPaymentResource(Resource):
                 "Password": password,
                 "Timestamp": timestamp,
                 "TransactionType": "CustomerPayBillOnline",
-                "Amount": str(amount),  
-                "PartyA": str(phone_number),  
+                "Amount": str(amount),
+                "PartyA": str(phone_number),
                 "PartyB": MPESA_BUSINESS_SHORT_CODE,
-                "PhoneNumber": str(phone_number), 
+                "PhoneNumber": str(phone_number),
                 "CallBackURL": MPESA_CALLBACK_URL,
                 "AccountReference": MPESA_ACCOUNT_REFERENCE,
                 "TransactionDesc": MPESA_TRANSACTION_DESC
@@ -66,7 +66,7 @@ class MpesaPaymentResource(Resource):
             response = requests.post('https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest', json=payload, headers=headers)
 
             if response.status_code == 200:
-                return jsonify({'success': True, 'response': response.json()})
+                return jsonify({'success': True, 'response': response.json(), 'name': f"{first_name} {last_name}"})
             else:
                 return jsonify({'success': False, 'error': response.text})
 
@@ -76,8 +76,11 @@ class MpesaPaymentResource(Resource):
 class MpesaCallbackResource(Resource):
     def post(self):
         data = request.json
-       
         print(data)
         return jsonify({'success': True})
 
+api.add_resource(MpesaPaymentResource, '/mpesa_payment')
+api.add_resource(MpesaCallbackResource, '/mpesa_callback')
 
+if __name__ == '__main__':
+    app.run(debug=True)
