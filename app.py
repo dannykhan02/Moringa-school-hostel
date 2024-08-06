@@ -8,7 +8,7 @@ from accommodation import AccommodationResource, AccommodationAmenityResource
 from Reviews import ReviewListResource, ReviewResource, AccommodationReviewResource
 from bookings import BookingResource
 from amenity import AmenityResource
-from auth import RegisterStudentResource, RegisterHostResource, LoginStudentResource, LoginHostResource
+from auth import RegisterStudentResource, RegisterHostResource, LoginStudentResource, LoginHostResource, UserRoleResource
 
 app = Flask(__name__)
 
@@ -27,6 +27,8 @@ api.add_resource(RegisterStudentResource, '/auth/register/student')
 api.add_resource(RegisterHostResource, '/auth/register/host')
 api.add_resource(LoginStudentResource, '/auth/login/student')
 api.add_resource(LoginHostResource, '/auth/login/host')
+api.add_resource(UserRoleResource, '/auth/user/role')
+
 
 api.add_resource(BookingResource, '/booking', '/booking/<int:id>')
 

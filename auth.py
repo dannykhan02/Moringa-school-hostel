@@ -1,7 +1,7 @@
 from flask import request
 from flask_restful import Resource
 from model import db, Student, Host
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from datetime import timedelta
 
 class RegisterStudentResource(Resource):
@@ -61,7 +61,10 @@ class LoginStudentResource(Resource):
         if not student or not student.check_password(password):
             return {'message': 'Invalid email or password'}, 401
 
-        access_token = create_access_token(identity={'type': 'student', 'id': student.id}, expires_delta=timedelta(days=30))
+        access_token = create_access_token(
+            identity={'type': 'student', 'id': student.id, 'first_name': student.first_name, 'last_name': student.last_name},
+            expires_delta=timedelta(days=30)
+        )
         return {'access_token': access_token, 'message': 'Login successful'}, 200
 
 
@@ -76,5 +79,15 @@ class LoginHostResource(Resource):
         if not host or not host.check_password(password):
             return {'message': 'Invalid email or password'}, 401
 
-        access_token = create_access_token(identity={'type': 'host', 'id': host.id}, expires_delta=timedelta(days=30))
+        access_token = create_access_token(
+            identity={'type': 'host', 'id': host.id, 'name': host.name},
+            expires_delta=timedelta(days=30)
+        )
         return {'access_token': access_token, 'message': 'Login successful'}, 200
+
+
+class UserRoleResource(Resource):
+    @jwt_required()
+    def get(self):
+        current_user = get_jwt_identity()
+        return {'role': current_user['type'], 'details': current_user}, 200
