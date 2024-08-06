@@ -9,7 +9,6 @@ from Reviews import ReviewListResource, ReviewResource, AccommodationReviewResou
 from bookings import BookingResource
 from amenity import AmenityResource
 from auth import RegisterStudentResource, RegisterHostResource, LoginStudentResource, LoginHostResource, UserRoleResource
-from payment import MpesaPaymentResource, MpesaCallbackResource
 
 app = Flask(__name__)
 api = Api(app)
@@ -41,8 +40,7 @@ api.add_resource(AccommodationReviewResource, '/accommodations/<int:accommodatio
 api.add_resource(AccommodationResource, '/accommodations', '/accommodations/<int:id>')
 api.add_resource(AccommodationAmenityResource, '/accommodations/<int:accommodation_id>/amenities')
 api.add_resource(AmenityResource, '/amenities', '/amenities/<int:id>')
-api.add_resource(MpesaPaymentResource, '/mpesa_payment')
-api.add_resource(MpesaCallbackResource, '/mpesa_callback')
+
 
 if __name__ == '__main__':
     app.run(debug=True)
