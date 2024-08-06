@@ -25,17 +25,14 @@ def generate_password(business_short_code, passkey, timestamp):
     return encoded_string.decode('utf-8')
 
 def format_phone_number(phone_number):
-    
     if phone_number.startswith('0'):
-        return '+254' + phone_number[1:]
-    elif not phone_number.startswith('+254'):
-        return '+254' + phone_number
+        return '254' + phone_number[1:]
+    elif not phone_number.startswith('254'):
+        return '254' + phone_number
     return phone_number
 
 def initiate_mpesa_payment(amount, phone_number):
-   
     phone_number = format_phone_number(phone_number)
-    
     timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
     password = generate_password(MPESA_BUSINESS_SHORT_CODE, MPESA_PASSKEY, timestamp)
 
