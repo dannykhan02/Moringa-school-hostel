@@ -1,6 +1,6 @@
 from flask import request, jsonify, make_response
 from model import db, Booking, Accommodation
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restful import Resource
 
@@ -37,15 +37,18 @@ class BookingResource(Resource):
             return make_response(jsonify({'message': 'Accommodation not found'}), 404)
 
         check_in = datetime.strptime(data['check_in'], '%Y-%m-%d %H:%M:%S')
-        check_out = datetime.strptime(data['check_out'], '%Y-%m-%d %H:%M:%S')
+        check_out = check_in + timedelta(days=30)  
+        total_price = 30 * accommodation.price_per_night
 
+        
+        
         new_booking = Booking(
             student_id=current_user['id'],
             accommodation_id=data['accommodation_id'],
             check_in=check_in,
             check_out=check_out,
-            total_price=data['total_price'],
-            status=data['status']
+            total_price=total_price,
+            status='confirmed'
         )
         db.session.add(new_booking)
         db.session.commit()
@@ -70,12 +73,14 @@ class BookingResource(Resource):
             return make_response(jsonify({'message': 'Accommodation not found'}), 404)
 
         check_in = datetime.strptime(data['check_in'], '%Y-%m-%d %H:%M:%S')
-        check_out = datetime.strptime(data['check_out'], '%Y-%m-%d %H:%M:%S')
+        check_out = check_in + timedelta(days=30)  
+
+        total_price = 30 * accommodation.price_per_night
 
         booking.accommodation_id = data['accommodation_id']
         booking.check_in = check_in
         booking.check_out = check_out
-        booking.total_price = data['total_price']
+        booking.total_price = total_price
         booking.status = data['status']
         db.session.commit()
         return make_response(jsonify(booking.serialize()), 200)
