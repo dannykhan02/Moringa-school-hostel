@@ -43,20 +43,23 @@ class BookingResource(Resource):
         if not accommodation:
             return make_response(jsonify({'message': 'Accommodation not found'}), 404)
 
-        check_in = datetime.strptime(data['check_in'], '%Y-%m-%d %H:%M:%S')
+        try:
+            check_in = datetime.strptime(data['check_in'], '%Y-%m-%d %H:%M:%S')
+        except ValueError:
+            return make_response(jsonify({'message': 'Invalid date format for check-in'}), 400)
+        
         check_out = check_in + timedelta(days=30)
         total_price = 30 * accommodation.price_per_night
-
         total_price = int(total_price)
 
         phone_number = data.get('phone_number')
         if not phone_number:
             return make_response(jsonify({'message': 'Phone number is required for payment'}), 400)
-        
+
         payment_response = initiate_mpesa_payment(total_price, phone_number)
         if payment_response.status_code != 200:
             return make_response(jsonify({'message': 'Payment initiation failed', 'details': payment_response.text}), 400)
-        
+
         payment_result = payment_response.json()
         if payment_result.get('ResponseCode') != '0':
             return make_response(jsonify({'message': 'Payment failed', 'details': payment_result}), 400)
@@ -90,10 +93,13 @@ class BookingResource(Resource):
         if not accommodation:
             return make_response(jsonify({'message': 'Accommodation not found'}), 404)
 
-        check_in = datetime.strptime(data['check_in'], '%Y-%m-%d %H:%M:%S')
+        try:
+            check_in = datetime.strptime(data['check_in'], '%Y-%m-%d %H:%M:%S')
+        except ValueError:
+            return make_response(jsonify({'message': 'Invalid date format for check-in'}), 400)
+        
         check_out = check_in + timedelta(days=30)
         total_price = 30 * accommodation.price_per_night
-
         total_price = int(total_price)
 
         booking.accommodation_id = data['accommodation_id']
