@@ -9,19 +9,21 @@ from Reviews import ReviewListResource, ReviewResource, AccommodationReviewResou
 from bookings import BookingResource
 from amenity import AmenityResource
 from auth import RegisterStudentResource, RegisterHostResource, LoginStudentResource, LoginHostResource, UserRoleResource
+from payment import MpesaPaymentResource, MpesaCallbackResource
 
 app = Flask(__name__)
+api = Api(app)
+migrate = Migrate(app, db)
+jwt = JWTManager(app)
+CORS(app)
+
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = 'kejani'
 
 db.init_app(app)
-migrate = Migrate(app, db)
-api = Api(app)
-CORS(app)
 
-jwt = JWTManager(app)
 
 api.add_resource(RegisterStudentResource, '/auth/register/student')
 api.add_resource(RegisterHostResource, '/auth/register/host')
@@ -39,6 +41,8 @@ api.add_resource(AccommodationReviewResource, '/accommodations/<int:accommodatio
 api.add_resource(AccommodationResource, '/accommodations', '/accommodations/<int:id>')
 api.add_resource(AccommodationAmenityResource, '/accommodations/<int:accommodation_id>/amenities')
 api.add_resource(AmenityResource, '/amenities', '/amenities/<int:id>')
+api.add_resource(MpesaPaymentResource, '/mpesa_payment')
+api.add_resource(MpesaCallbackResource, '/mpesa_callback')
 
 if __name__ == '__main__':
     app.run(debug=True)
