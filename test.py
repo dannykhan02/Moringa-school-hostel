@@ -1,4 +1,4 @@
 {
-    "amount": 45000,
-    "phone_number": "0793630006"
+    "rating": 4,
+    "comment": "Updated comment for the review."
 }
