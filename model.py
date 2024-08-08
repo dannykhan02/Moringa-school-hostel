@@ -98,15 +98,19 @@ class Booking(db.Model):
     status = db.Column(db.String(50), nullable=False)
 
     def serialize(self):
+        student = self.student  # Access the related Student object
         return {
             'id': self.id,
             'student_id': self.student_id,
+            'student_first_name': student.first_name,  # Include first name
+            'student_last_name': student.last_name,  # Include last name
             'accommodation_id': self.accommodation_id,
             'check_in': self.check_in.strftime('%d/%m/%Y'),
             'check_out': self.check_out.strftime('%d/%m/%Y'),
             'total_price': self.total_price,
             'status': self.status
         }
+
 
 class Review(db.Model):
     id = db.Column(db.Integer, primary_key=True)

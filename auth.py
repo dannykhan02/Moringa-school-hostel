@@ -91,7 +91,21 @@ class UserRoleResource(Resource):
     @jwt_required()
     def get(self):
         current_user = get_jwt_identity()
-        return {'role': current_user['type'], 'details': current_user}, 200
+        if current_user['type'] == 'student':
+            user_info = {
+                'role': 'student',
+                'first_name': current_user['first_name'],
+                'last_name': current_user['last_name']
+            }
+        elif current_user['type'] == 'host':
+            user_info = {
+                'role': 'host',
+                'name': current_user['name']
+            }
+        else:
+            return {'message': 'Invalid user role'}, 400
+
+        return user_info, 200
 
 
 class PasswordResetResource(Resource):
