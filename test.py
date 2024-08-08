@@ -1,4 +1,5 @@
 {
-    "amount": 45000,
-    "phone_number": "0793630006"
+    "accommodation_id": 1,
+    "rating": 5,
+    "comment": "Great stay, highly recommended!"
 }
