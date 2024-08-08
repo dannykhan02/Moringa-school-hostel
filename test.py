@@ -1,4 +1,4 @@
 {
-    "email": "student@example.com",
+    "email": "host@example.com",
     "password": "securepassword"
 }
