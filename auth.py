@@ -63,7 +63,7 @@ class LoginStudentResource(Resource):
             return {'message': 'Invalid email or password'}, 401
 
         access_token = create_access_token(
-            identity={'type': 'student', 'id': student.id, 'first_name': student.first_name, 'last_name': student.last_name},
+            identity={'type': 'student', 'id': student.id, 'first_name': student.first_name, 'last_name': student.last_name, 'email': student.email},
             expires_delta=timedelta(days=30)
         )
         return {'access_token': access_token, 'message': 'Login successful'}, 200
@@ -81,7 +81,7 @@ class LoginHostResource(Resource):
             return {'message': 'Invalid email or password'}, 401
 
         access_token = create_access_token(
-            identity={'type': 'host', 'id': host.id, 'name': host.name},
+            identity={'type': 'host', 'id': host.id, 'name': host.name, 'email': host.email},
             expires_delta=timedelta(days=30)
         )
         return {'access_token': access_token, 'message': 'Login successful'}, 200
@@ -92,15 +92,26 @@ class UserRoleResource(Resource):
     def get(self):
         current_user = get_jwt_identity()
         if current_user['type'] == 'student':
+            user = Student.query.get(current_user['id'])
+            if not user:
+                return {'message': 'User not found'}, 404
             user_info = {
                 'role': 'student',
-                'first_name': current_user['first_name'],
-                'last_name': current_user['last_name']
+                'id': user.id,
+                'email': user.email,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'gender': user.gender
             }
         elif current_user['type'] == 'host':
+            user = Host.query.get(current_user['id'])
+            if not user:
+                return {'message': 'User not found'}, 404
             user_info = {
                 'role': 'host',
-                'name': current_user['name']
+                'id': user.id,
+                'email': user.email,
+                'name': user.name
             }
         else:
             return {'message': 'Invalid user role'}, 400
