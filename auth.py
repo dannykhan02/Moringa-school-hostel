@@ -1,7 +1,8 @@
 from flask import request
 from flask_restful import Resource
+from werkzeug.security import generate_password_hash
 from model import db, Student, Host
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from datetime import timedelta
 
 class RegisterStudentResource(Resource):
@@ -61,7 +62,10 @@ class LoginStudentResource(Resource):
         if not student or not student.check_password(password):
             return {'message': 'Invalid email or password'}, 401
 
-        access_token = create_access_token(identity={'type': 'student', 'id': student.id}, expires_delta=timedelta(days=30))
+        access_token = create_access_token(
+            identity={'type': 'student', 'id': student.id, 'first_name': student.first_name, 'last_name': student.last_name},
+            expires_delta=timedelta(days=30)
+        )
         return {'access_token': access_token, 'message': 'Login successful'}, 200
 
 
@@ -76,5 +80,37 @@ class LoginHostResource(Resource):
         if not host or not host.check_password(password):
             return {'message': 'Invalid email or password'}, 401
 
-        access_token = create_access_token(identity={'type': 'host', 'id': host.id}, expires_delta=timedelta(days=30))
+        access_token = create_access_token(
+            identity={'type': 'host', 'id': host.id, 'name': host.name},
+            expires_delta=timedelta(days=30)
+        )
         return {'access_token': access_token, 'message': 'Login successful'}, 200
+
+
+class UserRoleResource(Resource):
+    @jwt_required()
+    def get(self):
+        current_user = get_jwt_identity()
+        return {'role': current_user['type'], 'details': current_user}, 200
+
+
+class PasswordResetResource(Resource):
+    def post(self):
+        data = request.get_json()
+        email = data.get('email')
+        new_password = data.get('new_password')
+
+        if not email or not new_password:
+            return {'message': 'Email and new password are required'}, 400
+
+        student = Student.query.filter_by(email=email).first()
+        host = Host.query.filter_by(email=email).first()
+
+        user = student if student else host
+        if not user:
+            return {'message': 'User not found'}, 404
+
+        user.password_hash = generate_password_hash(new_password, method='scrypt')
+        db.session.commit()
+
+        return {'message': 'Password reset successfully'}, 200
