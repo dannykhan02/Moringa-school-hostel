@@ -1,4 +1,4 @@
 {
-    "name": "Wi-Fi",
-    "description": "High-speed wireless internet"
+    "name": "Updated Wi-Fi",
+    "description": "Updated high-speed wireless internet"
 }
