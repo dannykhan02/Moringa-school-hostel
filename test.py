@@ -1,4 +1,4 @@
 {
-    "name": "Updated Name",
-    "description": "Updated Description"
+    "name": "Wi-Fi",
+    "description": "High-speed wireless internet"
 }
