@@ -1,5 +1,4 @@
 {
-    "accommodation_id": 1,
-    "rating": 5,
-    "comment": "Great stay, highly recommended!"
+    "rating": 4,
+    "comment": "Updated comment for the review."
 }
