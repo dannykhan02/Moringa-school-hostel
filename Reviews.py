@@ -7,8 +7,8 @@ class ReviewListResource(Resource):
     @jwt_required()
     def get(self):
         current_user = get_jwt_identity()
-        if current_user['type'] != 'student':
-            return {'message': 'Access denied: Only students can view reviews'}, 403
+        # if current_user['type'] != 'student':
+        #     return {'message': 'Access denied: Only students can view reviews'}, 403
 
         reviews = Review.query.all()
         return [{
