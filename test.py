@@ -1,7 +1,5 @@
 {
-    "email": "student@example.com",
+    "email": "host@example.com",
     "password": "securepassword",
-    "first_name": "John",
-    "last_name": "Doe",
-    "gender": "M"
+    "name": "Host Name"
 }
