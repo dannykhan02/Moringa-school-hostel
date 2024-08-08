@@ -1,6 +1,4 @@
-[
-    {
-        "name": "New Amenity",
-        "description": "New Description"
-    }
-]
+{
+    "name": "Updated Name",
+    "description": "Updated Description"
+}
