@@ -74,22 +74,6 @@ class AccommodationResource(Resource):
         db.session.commit()
         return make_response(jsonify(accommodation.as_dict()), 200)
 
-    @jwt_required()
-    def delete(self, id):
-        current_user = get_jwt_identity()
-        if current_user['type'] != 'host':
-            return make_response(jsonify({'message': 'Access forbidden: Insufficient role'}), 403)
-
-        accommodation = Accommodation.query.get(id)
-        if not accommodation:
-            return make_response(jsonify({'message': 'Accommodation not found'}), 404)
-
-        if accommodation.host_id != current_user['id']:
-            return make_response(jsonify({'message': 'Access forbidden: You do not own this accommodation'}), 403)
-
-        db.session.delete(accommodation)
-        db.session.commit()
-        return make_response('', 204)
 
 class AccommodationAmenityResource(Resource):
     def post(self, accommodation_id):

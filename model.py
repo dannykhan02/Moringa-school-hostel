@@ -59,7 +59,6 @@ class Accommodation(db.Model):
     number_of_students = db.Column(db.Integer, nullable=False)
     host_id = db.Column(db.Integer, db.ForeignKey('host.id', ondelete="CASCADE"), nullable=False)
     bookings = db.relationship('Booking', backref='accommodation', lazy=True, cascade="all, delete-orphan", passive_deletes=True)
-    reviews = db.relationship('Review', backref='accommodation', lazy=True, cascade="all, delete-orphan", passive_deletes=True)
     amenities = db.relationship('AccommodationAmenity', back_populates='accommodation', cascade="all, delete-orphan", passive_deletes=True)
 
     def as_dict(self):
@@ -98,12 +97,12 @@ class Booking(db.Model):
     status = db.Column(db.String(50), nullable=False)
 
     def serialize(self):
-        student = self.student  # Access the related Student object
+        student = self.student  
         return {
             'id': self.id,
             'student_id': self.student_id,
-            'student_first_name': student.first_name,  # Include first name
-            'student_last_name': student.last_name,  # Include last name
+            'student_first_name': student.first_name, 
+            'student_last_name': student.last_name,
             'accommodation_id': self.accommodation_id,
             'check_in': self.check_in.strftime('%d/%m/%Y'),
             'check_out': self.check_out.strftime('%d/%m/%Y'),
@@ -111,11 +110,10 @@ class Booking(db.Model):
             'status': self.status
         }
 
-
 class Review(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     student_id = db.Column(db.Integer, db.ForeignKey('student.id', ondelete="CASCADE"), nullable=False)
-    accommodation_id = db.Column(db.Integer, db.ForeignKey('accommodation.id', ondelete="CASCADE"), nullable=False)
+    location = db.Column(db.String(200), nullable=False)
     rating = db.Column(db.Integer, nullable=False)
     comment = db.Column(db.Text, nullable=True)
 
@@ -123,7 +121,7 @@ class Review(db.Model):
         return {
             'id': self.id,
             'student_id': self.student_id,
-            'accommodation_id': self.accommodation_id,
+            'location': self.location,
             'rating': self.rating,
             'comment': self.comment
         }
