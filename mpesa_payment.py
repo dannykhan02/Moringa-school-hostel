@@ -2,6 +2,7 @@ import requests
 from datetime import datetime
 from requests.auth import HTTPBasicAuth
 import base64
+import time
 
 MPESA_CONSUMER_KEY = 'AvnO2hFOvgnTjC3DhjjsPvSZg43wx2pKR7mppwnEpXcofgXq'
 MPESA_CONSUMER_SECRET = '79BL7sZjAfsK6ffS7NzgOpnglJhS11Vh2FAaxleIZRkaKXMfQ2l9qbk0R39CuOrD'
@@ -56,4 +57,39 @@ def initiate_mpesa_payment(amount, phone_number):
     }
 
     response = requests.post('https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest', json=payload, headers=headers)
-    return response
+    return response.json()
+
+def verify_mpesa_payment(checkout_request_id):
+    url = "https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query"
+    timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+    password = generate_password(MPESA_BUSINESS_SHORT_CODE, MPESA_PASSKEY, timestamp)
+    
+    payload = {
+        "BusinessShortCode": MPESA_BUSINESS_SHORT_CODE,
+        "Password": password,
+        "Timestamp": timestamp,
+        "CheckoutRequestID": checkout_request_id
+    }
+
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {get_mpesa_access_token()}'
+    }
+
+    response = requests.post(url, json=payload, headers=headers)
+    return response.json()
+
+def wait_for_payment_confirmation(checkout_request_id, max_retries=10, delay=10):
+    for _ in range(max_retries):
+        payment_status = verify_mpesa_payment(checkout_request_id)
+        result_code = payment_status.get('ResultCode')
+
+        if result_code == '0':
+            return {'status': 'confirmed', 'details': payment_status}
+        elif result_code is not None:  
+            return {'status': 'canceled', 'details': payment_status}
+
+        time.sleep(delay)
+
+    return {'status': 'canceled', 'details': 'Payment status could not be confirmed'}
+
