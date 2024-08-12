@@ -1,18 +1,29 @@
 from flask import request
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from model import db, Review
+from model import db, Review, Student
 
 class ReviewListResource(Resource):
     def get(self):
         reviews = Review.query.all()
-        return [{
-            'id': review.id,
-            'student_id': review.student_id,
-            'location': review.location,
-            'rating': review.rating,
-            'comment': review.comment
-        } for review in reviews]
+        result = []
+        for review in reviews:
+            if review.student_id:
+                user = Student.query.get(review.student_id)
+                user_name = f"{user.first_name} {user.last_name}" if user else "Unknown"
+            else:
+                user_name = "Unknown"
+            
+            result.append({
+                'id': review.id,
+                'student_id': review.student_id,
+                'user_name': user_name,
+                'location': review.location,
+                'rating': review.rating,
+                'comment': review.comment
+            })
+        
+        return result, 200
 
     @jwt_required()
     def post(self):
