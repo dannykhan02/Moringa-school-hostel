@@ -5,7 +5,7 @@ from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from model import db
 from accommodation import AccommodationResource, AccommodationAmenityResource
-from Reviews import ReviewListResource, ReviewResource, AccommodationReviewResource
+from Reviews import ReviewListResource, ReviewResource, LocationReviewResource
 from bookings import BookingResource
 from amenity import AmenityResource
 from auth import RegisterStudentResource, RegisterHostResource, LoginStudentResource, LoginHostResource, UserRoleResource, PasswordResetResource
@@ -36,7 +36,7 @@ api.add_resource(BookingResource, '/booking', '/booking/<int:id>')
 
 api.add_resource(ReviewListResource, '/reviews')
 api.add_resource(ReviewResource, '/reviews/<int:id>')
-api.add_resource(AccommodationReviewResource, '/accommodations/<int:accommodation_id>/reviews')
+api.add_resource(LocationReviewResource, '/locations/<string:location>/reviews')
 
 
 api.add_resource(AccommodationResource, '/accommodations', '/accommodations/<int:id>')
