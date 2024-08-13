@@ -9,7 +9,7 @@ from Reviews import ReviewListResource, ReviewResource, LocationReviewResource
 from bookings import BookingResource
 from amenity import AmenityResource
 from auth import RegisterStudentResource, RegisterHostResource, LoginStudentResource, LoginHostResource, UserRoleResource, PasswordResetResource
-
+import os
 app = Flask(__name__)
 api = Api(app)
 migrate = Migrate(app, db)
@@ -19,6 +19,7 @@ CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = 'kejani'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'postgresql://nest_nkpa_user:7ImvCUBGdDEin5cpL80TCvPRDwmJ0MT2@dpg-cq9s53dds78s739i8gqg-a.ohio-postgres.render.com/nest_nkpa')
 
 db.init_app(app)
 
