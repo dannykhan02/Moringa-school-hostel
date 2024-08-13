@@ -9,7 +9,7 @@ class Student(db.Model):
     last_name = db.Column(db.String(80), nullable=False)
     gender = db.Column(db.String(10), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String, nullable=False)
+    password_hash = db.Column(db.String(256), nullable=False)
     bookings = db.relationship('Booking', backref='student', lazy=True, cascade="all, delete-orphan", passive_deletes=True)
     reviews = db.relationship('Review', backref='student', lazy=True, cascade="all, delete-orphan", passive_deletes=True)
     student_amenities = db.relationship('StudentAmenity', back_populates='student', cascade="all, delete-orphan", passive_deletes=True)
@@ -33,7 +33,7 @@ class Host(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
+    password_hash = db.Column(db.String(256), nullable=False)
     accommodations = db.relationship('Accommodation', backref='host', lazy=True, cascade="all, delete-orphan", passive_deletes=True)
 
     def set_password(self, password):
