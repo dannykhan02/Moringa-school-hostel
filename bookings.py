@@ -43,8 +43,9 @@ class BookingResource(Resource):
         if not accommodation:
             return make_response(jsonify({'message': 'Accommodation not found'}), 404)
 
-        if accommodation.number_of_rooms <= 0 or accommodation.number_of_students <= 0:
-            return make_response(jsonify({'message': 'Accommodation cannot be booked. No available rooms or student capacity reached.'}), 400)
+        current_bookings = Booking.query.filter_by(accommodation_id=accommodation.id).count()
+        if current_bookings >= accommodation.number_of_students:
+            return make_response(jsonify({'message': f'This accommodation is fully booked. It can only accommodate {accommodation.number_of_students} students.'}), 400)
 
         try:
             check_in = datetime.strptime(data['check_in'], '%Y-%m-%d %H:%M:%S')
@@ -76,7 +77,6 @@ class BookingResource(Resource):
             )
 
             accommodation.number_of_rooms -= 1
-            accommodation.number_of_students -= 1
             db.session.add(new_booking)
             db.session.commit()
             return make_response(jsonify(new_booking.serialize()), 201)
@@ -132,7 +132,6 @@ class BookingResource(Resource):
         accommodation = Accommodation.query.get(booking.accommodation_id)
         if accommodation:
             accommodation.number_of_rooms += 1
-            accommodation.number_of_students += 1
 
         db.session.delete(booking)
         db.session.commit()
