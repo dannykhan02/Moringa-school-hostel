@@ -19,7 +19,7 @@ CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = 'kejani'
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'postgresql://nest_nkpa_user:7ImvCUBGdDEin5cpL80TCvPRDwmJ0MT2@dpg-cq9s53dds78s739i8gqg-a.ohio-postgres.render.com/nest_nkpa')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'postgresql://my_database_71v9_user:5d782t53XYmkGG3WlP37tbWUvKvgLsbJ@dpg-cqbms38gph6c73c2sfj0-a/my_database_71v9')
 
 db.init_app(app)
 
