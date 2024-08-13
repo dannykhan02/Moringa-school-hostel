@@ -3,7 +3,7 @@ from model import db, Booking, Accommodation
 from datetime import datetime, timedelta
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restful import Resource
-from mpesa_payment import initiate_mpesa_payment
+from mpesa_payment import initiate_mpesa_payment, wait_for_payment_confirmation
 
 class BookingResource(Resource):
     @jwt_required()
@@ -56,22 +56,24 @@ class BookingResource(Resource):
         if not phone_number:
             return make_response(jsonify({'message': 'Phone number is required for payment'}), 400)
 
-        payment_response = initiate_mpesa_payment(total_price, phone_number)
-        if payment_response.status_code != 200:
-            return make_response(jsonify({'message': 'Payment initiation failed', 'details': payment_response.text}), 400)
-
-        payment_result = payment_response.json()
+        payment_result = initiate_mpesa_payment(total_price, phone_number)
         if payment_result.get('ResponseCode') != '0':
-            return make_response(jsonify({'message': 'Payment failed', 'details': payment_result}), 400)
+            return make_response(jsonify({'message': 'Payment initiation failed', 'details': payment_result}), 400)
 
-        new_booking = Booking(
-            student_id=current_user['id'],
-            accommodation_id=data['accommodation_id'],
-            check_in=check_in,
-            check_out=check_out,
-            total_price=total_price,
-            status='confirmed'
-        )
+        payment_verification = wait_for_payment_confirmation(payment_result['CheckoutRequestID'])
+
+        if payment_verification['status'] == 'confirmed':
+            new_booking = Booking(
+                student_id=current_user['id'],
+                accommodation_id=data['accommodation_id'],
+                check_in=check_in,
+                check_out=check_out,
+                total_price=total_price,
+                status='confirmed'
+            )
+        else:
+            return make_response(jsonify({'message': 'Payment failed or was canceled', 'details': payment_verification['details']}), 400)
+
         db.session.add(new_booking)
         db.session.commit()
         return make_response(jsonify(new_booking.serialize()), 201)
