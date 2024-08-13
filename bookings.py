@@ -53,7 +53,7 @@ class BookingResource(Resource):
             return make_response(jsonify({'message': 'Invalid date format for check-in'}), 400)
         
         check_out = check_in + timedelta(days=30)
-        total_price = 1 * accommodation.price_per_night
+        total_price = 30 * accommodation.price_per_night
         total_price = int(total_price)
 
         phone_number = data.get('phone_number')
