@@ -43,13 +43,16 @@ class BookingResource(Resource):
         if not accommodation:
             return make_response(jsonify({'message': 'Accommodation not found'}), 404)
 
+        if accommodation.number_of_rooms <= 0 or accommodation.number_of_students <= 0:
+            return make_response(jsonify({'message': 'Accommodation cannot be booked. No available rooms or student capacity reached.'}), 400)
+
         try:
             check_in = datetime.strptime(data['check_in'], '%Y-%m-%d %H:%M:%S')
         except ValueError:
             return make_response(jsonify({'message': 'Invalid date format for check-in'}), 400)
         
         check_out = check_in + timedelta(days=30)
-        total_price = 30 * accommodation.price_per_night
+        total_price = 1 * accommodation.price_per_night
         total_price = int(total_price)
 
         phone_number = data.get('phone_number')
@@ -71,12 +74,14 @@ class BookingResource(Resource):
                 total_price=total_price,
                 status='confirmed'
             )
+
+            accommodation.number_of_rooms -= 1
+            accommodation.number_of_students -= 1
+            db.session.add(new_booking)
+            db.session.commit()
+            return make_response(jsonify(new_booking.serialize()), 201)
         else:
             return make_response(jsonify({'message': 'Payment failed or was canceled', 'details': payment_verification['details']}), 400)
-
-        db.session.add(new_booking)
-        db.session.commit()
-        return make_response(jsonify(new_booking.serialize()), 201)
 
     @jwt_required()
     def put(self, id):
@@ -123,6 +128,11 @@ class BookingResource(Resource):
             return make_response(jsonify({'message': 'Booking not found'}), 404)
         if booking.student_id != current_user['id']:
             return make_response(jsonify({'message': 'Access denied: This booking is not yours'}), 403)
+
+        accommodation = Accommodation.query.get(booking.accommodation_id)
+        if accommodation:
+            accommodation.number_of_rooms += 1
+            accommodation.number_of_students += 1
 
         db.session.delete(booking)
         db.session.commit()
