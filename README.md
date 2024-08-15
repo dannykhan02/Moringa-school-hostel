@@ -21,7 +21,7 @@ This repository contains the backend code for the Moringa-school-hostel project,
 1. Clone this repository using
 
     ```bash
-    git clone https://github.com/your-username/Moringa-school-hostel.git
+    git clone https://github.com/dannykhan02/Moringa-school-hostel.git
     ```
 
     or by downloading a ZIP file of the code.
