@@ -1,25 +1,80 @@
+# Moringa-School-Hostels
 
-Moringa-School-Hostels
- Date: 2024/08/13
- By: Daniel, Alex, Edgar, Jorbat, Tabitha, Laurah
+Accommodation Booking Platform Backend, AUGUST 13 2024
 
-Description This repository contains the backend code for the Moringa-school-hostel project, an accommodation booking platform where users can list properties for rent and students can search for and book accommodations based on their preferences.
+By **Daniel, Alex, Edgar, Jorbat, Tabitha, Laurah**
 
-Project Setup Clone the repository:
+## Description
 
-git clone https://github.com/your-username/Moringa-school-hostel.git cd Moringa-school-hostel
+This repository contains the backend code for the Moringa-school-hostel project, an accommodation booking platform where users can list properties for rent and students can search for and book accommodations based on their preferences.
 
-Install dependencies: pip install -r requirements.txt
+## How to Use
 
-Run the server: flask run The server will run at http://localhost:5000.
+### Requirements
 
-Project Overview The Moringa-school-hostel backend is built using Flask, a Python web framework, and is designed to handle various functionalities of an accommodation booking platform, including: User Authentication: Secure login and registration features. Accommodation Management: Hosts can list, update, and delete properties. Booking Management: Students can search for and book available accommodations. Payment Processing: Integrated payment gateway for secure transactions.
+* A computer with a bash terminal.
+* Access to the internet.
+* Python and Flask installed.
 
-Support and Contact For support or inquiries, please contact any team member listed above.
+### Installation Process
 
-License MIT License
+1. Clone this repository using
 
-Copyright (c) 2024 Daniel, Alex, Edgar, Jorbat, Tabitha, Laurah
+    ```bash
+    git clone https://github.com/your-username/Moringa-school-hostel.git
+    ```
+
+    or by downloading a ZIP file of the code.
+
+2. If downloaded as a .zip file, extract it to your preferred location.
+
+3. Navigate to the project folder in your bash terminal.
+
+4. Install dependencies using
+
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+5. Run the server using
+
+    ```bash
+    flask run
+    ```
+
+    The server will run at [http://localhost:5000](http://localhost:5000).
+
+## Project Overview
+
+The Moringa-school-hostel backend is built using Flask, a Python web framework, and is designed to handle various functionalities of an accommodation booking platform, including:
+
+* **User Authentication:** Secure login and registration features.
+* **Accommodation Management:** Hosts can list, update, and delete properties.
+* **Booking Management:** Students can search for and book available accommodations.
+* **Payment Processing:** Integrated payment gateway for secure transactions.
+
+## Technologies Used
+
+* Python
+* Flask
+* SQLAlchemy
+* Git
+
+## Support and Contact Details
+
+In case of any queries, need for collaboration, or issues with this code, feel free to reach out to any of the team members listed above at:
+
+- alex.wambugu@student.moringaschool.com
+- edgar.agesa@student.moringaschool.com
+- jorbat.kamau@student.moringaschool.com
+- laurah.famba@student.moringaschool.com
+- tabitha.okoth@student.moringaschool.com
+
+## License
+
+MIT License
+
+Copyright &copy; 2024 Daniel, Alex, Edgar, Jorbat, Tabitha, Laurah
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
