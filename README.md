@@ -8,6 +8,8 @@ By **Daniel, Alex, Edgar, Jorbat, Tabitha, Laurah**
 
 This repository contains the backend code for the Moringa-school-hostel project, an accommodation booking platform where users can list properties for rent and students can search for and book accommodations based on their preferences.
 
+For the Frontend, please visit [Moringa-Hostel-Frontend](https://github.com/JBcollo1/front-end-hostels)
+
 ## How to Use
 
 ### Requirements
